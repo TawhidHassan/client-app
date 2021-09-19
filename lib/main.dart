@@ -9,9 +9,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
-
+import 'package:workmanager/workmanager.dart';
 import 'Route/app_router.dart';
 import 'User/user_cubit.dart';
+
+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    print("Native called background task: $task");
+    UserCubit().updateLanLot(inputData['lat'],inputData['lon'],inputData['id']);
+    return Future.value(true);
+  });
+}
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +29,11 @@ void main() async{
   Directory directory = await pathProvider.getApplicationDocumentsDirectory();
   Hive.init(directory.path);
   await Hive.openBox('users');
-
+  Workmanager().initialize(
+      callbackDispatcher, // The top level function, aka callbackDispatcher
+      isInDebugMode: true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  );
+  Workmanager().registerOneOffTask("1", "simpleTask");
   runApp(MyApp(
     router: AppRouter(),
   ));

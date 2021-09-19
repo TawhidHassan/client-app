@@ -32,7 +32,7 @@ class UserNetwork {
 
   Future<Map> updateLanLot(Map<String, String> data,String id) async{
     try {
-      var response = await http.post(
+      var response = await http.patch(
         Uri.parse(BASE_URL + "users/updatelan/"+id),
         headers: {
           "Content-type": "application/json",

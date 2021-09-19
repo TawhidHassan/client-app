@@ -5,10 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
+import 'package:location/location.dart';
 import 'package:progress_button/progress_button.dart';
 import 'package:user_location_get_app/Presentation/Widgets/Button/ProgressAnimatedButton.dart';
 import 'package:user_location_get_app/Presentation/Widgets/TextField/NormalTextField.dart';
 import 'package:user_location_get_app/User/user_cubit.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../UpdateLocation.dart';
 
@@ -30,15 +32,20 @@ class _HomeScreenState extends State<HomeScreen> {
   ButtonState progressButtonState = ButtonState.normal;
   TextEditingController lan=new TextEditingController();
   TextEditingController lot=new TextEditingController();
+  Location location = new Location();
   @override
   void initState() {
     super.initState();
     getData();
     getCureentLocation();
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      BlocProvider.of<UserCubit>(context).updateLanLot(currentLocation.latitude.toString(),currentLocation.longitude.toString(),id);
+    });
   }
   void getCureentLocation()async{
     var possition=await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     var lastPosition=await Geolocator().getLastKnownPosition();
+    location.enableBackgroundMode(enable: true)
     print(lastPosition);
     print(possition.latitude);
     print(possition.longitude);
@@ -100,6 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     }
   }
+
+  static void update() {
+    print("1234");
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -179,6 +191,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           circule=true;
                         });
                         BlocProvider.of<UserCubit>(context).updateLanLot(lan.text,lot.text,id);
+                        Workmanager().registerOneOffTask(
+                          "1",
+                          "simpleTask",
+                          inputData: {
+                            'lon': lan.text,
+                            'lat': lot.text,
+                            'id': id,
+
+                          },
+                        );
                       },
                       child: Container(
                         color: Colors.blueAccent,
@@ -196,5 +218,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 }
 

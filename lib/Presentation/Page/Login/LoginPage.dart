@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_new
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:progress_button/progress_button.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -70,7 +71,8 @@ class _LoginPageState extends State<LoginPage> {
                 progressButtonState = ButtonState.normal;
               });
             }else{
-              storeToken(data.token,data.user.id, data.user.name, data.user.lan, data.user.email, data.user.lat);
+
+              storeToken(data.token,data.user.id, data.user.name, data.user.lon, data.user.email, data.user.lat);
               Navigator.pushReplacement(
                   context,
                   new MaterialPageRoute(
@@ -124,16 +126,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
-  Future storeToken(String token,int id,String name,String lan,String email,String lat) async{
+  Future storeToken(String token,String id,String name,String lon,String email,String lat) async{
+    Logger().d("xxxxxxx"+id);
     users.put("token", token);
     users.put("name", name);
-    users.put("lan", lan);
+    users.put("lan", lon);
     users.put("email", email);
     users.put("userId", id);
     users.put("lat", lat);
   }
 
 }
-
 
 

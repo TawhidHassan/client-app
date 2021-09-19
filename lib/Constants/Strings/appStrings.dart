@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 
 //base url of api
-const BASE_URL = "your url";
+const BASE_URL = "https://radiant-hamlet-72255.herokuapp.com/api/v1/";
 
 //route name
 const MAIN_PAGE = "/main_page";
